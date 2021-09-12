@@ -1,34 +1,20 @@
 const { ApolloServer } = require("apollo-server");
-const gql = require("graphql-tag");
+const { PubSub } = require("graphql-subscriptions");
+// const gql = require("graphql-tag");
 const mongoose = require("mongoose");
 
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
-const Post = require("./models/Post");
+// const Post = require("./models/Post");
 const { MONGODB } = require("./config.js");
+
+const pubsub = new PubSub();
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => ({ req, pubsub }),
 });
-
-// mongoose.connect(
-//   MONGODB,
-//   {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//     authSource: "merg",
-//     connectTimeoutMS: 50000,
-//     ssl: true,
-//   },
-//   (err) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       console.log("MongoDB Connected");
-//     }
-//   }
-// );
 
 mongoose
   .connect(MONGODB, {
